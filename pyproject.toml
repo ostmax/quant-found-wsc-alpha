@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wsc-alpha"
+version = "0.0.1"
+description = "Market-neutral algorithmic research framework for Wall Street Code (Nomination: Alpha)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "TBD" }  # see LICENSE section of README — not decided yet, do not assume
+authors = [
+    { name = "Maxim Ostrovskiy" },
+]
+classifiers = [
+    "Private :: Do Not Upload",
+    "Development Status :: 2 - Pre-Alpha",
+    "Programming Language :: Python :: 3.11",
+]
+
+# Kept intentionally minimal at this stage — this is a skeleton, not a working
+# strategy. Dependencies are added as each component in src/wsc_alpha/ gets a real
+# implementation, not speculatively up front.
+dependencies = [
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

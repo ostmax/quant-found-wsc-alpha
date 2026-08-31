@@ -216,3 +216,38 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# =========================================================
+# WSC Alpha — project-specific security exclusions
+# =========================================================
+# This is a PUBLIC repository. Nothing below should ever be committed.
+# The plain ".env" entry above does not cover variant filenames
+# (.env.local, .env.production, etc.) or *.env — covered explicitly here.
+
+.env
+*.env
+.env.*
+!.env.example
+
+__pycache__/
+*.pyc
+
+.venv/
+venv/
+
+# Local/real data and logs — this repo ships example configs and interfaces only,
+# never real market data, account data, or logs.
+data/
+logs/
+
+secrets/
+credentials/
+*.token
+*.key
+*.pem
+
+# Real (non-example) local configs — only *.example.* variants are tracked.
+config/*.yaml
+!config/*.example.yaml
+config/*.yml
+!config/*.example.yml

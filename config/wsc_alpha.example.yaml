@@ -1,0 +1,71 @@
+# wsc_alpha example configuration
+#
+# This is an EXAMPLE file, not a working configuration. Copy to a real config file
+# (not committed) before use. Every value marked TODO / UNKNOWN / TBD is genuinely
+# undecided — do not fill these in with guesses. See docs/competition_rules.md for
+# what is confirmed about the competition itself, and the separate risk-design work
+# for reasoned (but not yet backtest-calibrated) starting ranges for the risk
+# section below.
+#
+# Nothing in this file is a proven or final parameter set. No backtest has been run
+# against these values.
+
+competition:
+  name: "Уолл-стрит код: битва алготрейдеров"
+  nomination: "Alpha"
+  # Exact start/end dates for this competition run — see docs/competition_rules.md
+  # open items.
+  start_date: TBD
+  end_date: TBD
+  max_duration_weeks: 8  # confirmed, see docs/competition_rules.md item 9
+
+market:
+  timezone: "America/New_York"  # US equities — reasonable default, not yet confirmed against Arena API docs
+  delayed_minutes: 15  # confirmed, see docs/competition_rules.md item 8
+  ticker_format: "SYMBOL@MIC"  # confirmed, see docs/competition_rules.md item 5
+  commission_pct: 0.001  # 0.1%, confirmed for "relevant US MIC(s)" — exact MIC list UNKNOWN, see docs/competition_rules.md item 7
+
+universe:
+  # No confirmed symbol list yet. UNKNOWN pending:
+  #   - final universe filter thresholds (liquidity/spread/price/vol/shortability)
+  #   - the permitted broad-market ETF list (docs/competition_rules.md item 3)
+  symbols: []  # TODO — do not populate with a guessed list
+  permitted_etfs: []  # TODO — UNKNOWN, see docs/competition_rules.md open items
+  min_avg_dollar_volume_usd: TBD
+  max_spread_bps: TBD
+  min_price_usd: TBD
+
+portfolio:
+  starting_capital_rub: 1000000000  # confirmed, see docs/competition_rules.md item 6
+  max_gross_exposure_pct_nav: TBD  # NEEDS backtest calibration — see risk-design work
+  max_net_exposure_pct_nav: TBD    # target is near-zero (market-neutral objective) — exact band UNKNOWN pending calibration
+  max_sector_gross_pct_nav: TBD
+
+risk:
+  position_risk:
+    max_position_pct_nav: TBD
+    max_idea_risk_pct: TBD
+  market_beta:
+    target_range: TBD  # reasoned starting point discussed separately; not copied here as if proven
+    hard_stop: TBD
+  sector_beta:
+    target_range: TBD
+    hard_stop: TBD
+  drawdown_limit:
+    soft_pct: TBD
+    reduce_risk_pct: TBD
+    hard_stop_pct: TBD
+    # UNKNOWN: all drawdown thresholds require calibration against a real
+    # wsc_alpha backtest daily-NAV series once wsc_alpha.metrics exists — see
+    # docs/architecture.md.
+
+execution:
+  order_type: TODO  # Arena API order types not yet confirmed — see arena_adapter.py
+  min_holding_period_days: TBD
+  turnover_budget_weekly_pct_nav: TBD
+
+# Explicitly NOT included below, because they are not confirmed:
+#   - short-selling availability/constraints
+#   - leverage/margin availability
+#   - scoring-formula-specific parameters (none should ever be guessed here —
+#     see the separate risk-design work's score-robustness section for why)

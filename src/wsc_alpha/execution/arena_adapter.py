@@ -1,13 +1,20 @@
 """
 Abstract interface for the Arena API (Финам «Уолл-стрит код»).
 
-Interface stub only — no network calls, no Arena documentation reviewed yet.
-Method names/signatures are a guess at the operations a broker-style execution
-API needs, loosely modeled on the private Quant Found broker adapter's *shape*
-(see docs/quant_found_mapping.md — not its Tinkoff-specific implementation).
+Interface stub only — no network calls. Confirmed against the official
+Регламент (docs/competition_rules.md, п. 2.1/2.2/2.6/2.7/2.11): "Finam Arena
+API", free access via an individual token, instruments at
+https://api.finam.ru/docs/rest/#assetsservice_assets, trading schedule at
+https://api.finam.ru/docs/rest/#assetsservice_schedule. The Регламент does not
+name order/account/position endpoints — those, and every method signature below,
+remain a guess pending a read of the full REST docs at
+https://api.finam.ru/docs/rest/ (not done as part of this pass — see
+docs/competition_rules.md's UNKNOWN / NEEDS API VERIFICATION section).
 
-Every method raises NotImplementedError. Fill these in against real Arena API
-docs, not assumptions.
+Loosely modeled on the private Quant Found broker adapter's *shape*, not its
+Tinkoff-specific implementation (see docs/quant_found_mapping.md).
+
+Every method raises NotImplementedError.
 """
 
 from __future__ import annotations
@@ -18,7 +25,9 @@ from typing import Any
 
 
 def format_ticker(symbol: str, mic: str) -> str:
-    """SYMBOL@MIC (see docs/competition_rules.md). Does not validate `mic`."""
+    """SYMBOL@MIC (see docs/competition_rules.md, п. 2.7). Example from the
+    Регламент itself: format_ticker("AAPL", "XNYS") == "AAPL@XNYS". Does not
+    validate `mic`."""
     return f"{symbol}@{mic}"
 
 

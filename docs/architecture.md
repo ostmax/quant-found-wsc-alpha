@@ -10,8 +10,9 @@ current state of the repository.
 
 ```
 Market Data
-   │  (US listed common stocks + permitted ETFs, 15-minute delayed,
-   │   ticker format SYMBOL@MIC — see docs/competition_rules.md)
+   │  (US common stock + broad-market-index-tracking ETFs, 15-minute delayed,
+   │   ticker format SYMBOL@MIC, live instrument list via Arena API — all
+   │   confirmed against the official Регламент, see docs/competition_rules.md)
    ▼
 Universe
    │  (liquidity / spread / price / volatility / shortability / sector /
@@ -49,6 +50,21 @@ that only observes NAV without being able to throttle subsequent sizing is not
 actually a risk control, just a dashboard. This mirrors a pattern already proven in
 the private Quant Found production system (a multiplicative risk-scale factor
 applied at the sizing layer) — see `docs/quant_found_mapping.md`, "Risk management".
+
+Two competition-specific facts, confirmed against the official Регламент, shape
+this flow directly:
+
+- **NAV/Metrics should exclude corporate-action price gaps from realized
+  drawdown/return, matching the Organizer's own scoring convention** (Регламент
+  п. 2.18) — if this project's own metrics adjusted for those gaps differently
+  from how the competition scores them, internal metrics and competition
+  standing could diverge for reasons unrelated to the strategy itself.
+- **The Nomination 1 scoring formula will never be disclosed, by design**
+  (Регламент п. 2.20 — Organizer's sole discretion, not provided even on
+  request). This is why Risk Management and Metrics are not designed around
+  optimizing one guessed formula — see the separate risk-design work's
+  score-robustness analysis for the actual approach (checking which portfolio
+  properties hold up across several plausible scoring functions).
 
 ## Component → package mapping
 

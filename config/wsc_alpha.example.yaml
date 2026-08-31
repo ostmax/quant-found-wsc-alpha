@@ -1,44 +1,62 @@
 # wsc_alpha example configuration
 #
-# This is an EXAMPLE file, not a working configuration. Copy to a real config file
-# (not committed) before use. Every value marked TODO / UNKNOWN / TBD is genuinely
-# undecided — do not fill these in with guesses. See docs/competition_rules.md for
-# what is confirmed about the competition itself, and the separate risk-design work
-# for reasoned (but not yet backtest-calibrated) starting ranges for the risk
-# section below.
+# EXAMPLE file, not a working configuration. Copy to a real (untracked) config
+# before use. Values marked TODO / UNKNOWN / TBD are genuinely undecided or
+# unconfirmed — see docs/competition_rules.md (sourced from the official
+# Регламент, read in full 2026-08-31) for what's confirmed vs. what isn't, and
+# the separate risk-design work for reasoned-but-uncalibrated risk ranges.
 #
-# Nothing in this file is a proven or final parameter set. No backtest has been run
-# against these values.
+# No backtest has been run against these values. Nothing here is proven or final.
 
 competition:
   name: "Уолл-стрит код: битва алготрейдеров"
-  nomination: "Alpha"
-  # Exact start/end dates for this competition run — see docs/competition_rules.md
-  # open items.
-  start_date: TBD
-  end_date: TBD
-  max_duration_weeks: 8  # confirmed, see docs/competition_rules.md item 9
+  nomination: "Alpha"  # Nomination 1, п. 1.3
+  organizer: "АО «ФИНАМ»"
+  registration_start: "2026-09-01"   # confirmed, п. 2.3
+  registration_end: "2026-11-23"     # confirmed, п. 2.3
+  trading_start: "2026-09-28T16:30:00+03:00"  # confirmed, п. 2.3 (Moscow time)
+  trading_end: "2026-11-23T23:00:00+03:00"    # confirmed, п. 2.3 (Moscow time)
+  results_date: "2026-11-30"         # confirmed, п. 2.3 / п. 3.3
+  max_participation_weeks: 8         # confirmed, п. 2.4 -- note: trading_start..trading_end is itself exactly 8 weeks
 
 market:
-  timezone: "America/New_York"  # US equities — reasonable default, not yet confirmed against Arena API docs
-  delayed_minutes: 15  # confirmed, see docs/competition_rules.md item 8
-  ticker_format: "SYMBOL@MIC"  # confirmed, see docs/competition_rules.md item 5
-  commission_pct: 0.001  # 0.1%, confirmed for "relevant US MIC(s)" — exact MIC list UNKNOWN, see docs/competition_rules.md item 7
+  timezone: "America/New_York"  # reasonable default for NYSE/NASDAQ trading hours -- NOT specified by the Регламент itself, which defers to each exchange's own schedule (assetsservice_schedule)
+  delayed_minutes: 15  # confirmed, п. 2.13
+  ticker_format: "SYMBOL@MIC"  # confirmed, п. 2.7 -- Регламент's own example: AAPL@XNYS
+  commission_pct: 0.001  # 0.1%, confirmed, п. 2.10
+  commission_mics:  # confirmed exhaustive list from п. 2.10 -- all at 0.1%, no other tier exists in the Регламент
+    - PINX   # OTC Markets Pink Open Market
+    - XASE   # NYSE American
+    - XNCM   # NASDAQ Capital Market
+    - XNGS   # NASDAQ Global Select Market
+    - XNMS   # NASDAQ Stock Market
+    - XNYM   # New York Mercantile Exchange -- not a stock/ETF venue, likely irrelevant to this nomination's actual universe (п. 2.6)
+    - XNYS   # New York Stock Exchange
+    - XCME   # Chicago Mercantile Exchange -- see XNYM note above
+    - BATS   # Better Alternative Trading System
+    - ARCX   # NYSE Arca
+    - XCEC   # Commodities Exchange Center -- see XNYM note above
+  corporate_action_gaps_excluded_from_scoring: true  # confirmed, п. 2.18 -- Organizer's own return calc ignores split/dividend/etc. price gaps
 
 universe:
-  # No confirmed symbol list yet. UNKNOWN pending:
-  #   - final universe filter thresholds (liquidity/spread/price/vol/shortability)
-  #   - the permitted broad-market ETF list (docs/competition_rules.md item 3)
-  symbols: []  # TODO — do not populate with a guessed list
-  permitted_etfs: []  # TODO — UNKNOWN, see docs/competition_rules.md open items
+  # No fixed list exists in the Регламент -- eligibility is criterion-based
+  # (п. 2.6), not an enumerable list, and the live tradable set is served only
+  # via the Arena API (UNKNOWN / NEEDS API VERIFICATION for a concrete symbol
+  # list at any given time; can change without notice per п. 2.6).
+  instrument_types:
+    - common_stock  # US-listed common stock on a registered national exchange, incl. NYSE and/or NASDAQ (п. 2.6)
+    - broad_market_etf  # ETF tracking a broad US market index, e.g. S&P 500 / DJIA / Russell 3000 "и аналогичных" (п. 2.6) -- exact index list beyond these 3 examples is UNKNOWN
+  symbols: []  # TODO -- do not populate with a guessed list; see live endpoint below
+  live_instrument_list_endpoint: "https://api.finam.ru/docs/rest/#assetsservice_assets"  # confirmed, п. 2.6
+  trading_schedule_endpoint: "https://api.finam.ru/docs/rest/#assetsservice_schedule"    # confirmed, п. 2.11
   min_avg_dollar_volume_usd: TBD
   max_spread_bps: TBD
   min_price_usd: TBD
 
 portfolio:
-  starting_capital_rub: 1000000000  # confirmed, see docs/competition_rules.md item 6
-  max_gross_exposure_pct_nav: TBD  # NEEDS backtest calibration — see risk-design work
-  max_net_exposure_pct_nav: TBD    # target is near-zero (market-neutral objective) — exact band UNKNOWN pending calibration
+  starting_capital_rub: 1000000000  # confirmed, п. 2.9 -- per virtual account, Nomination 1/2 specifically (Nomination 3 differs: $1,000,000 USD equivalent, not relevant here)
+  max_gross_exposure_pct_nav: TBD  # NEEDS backtest calibration -- see risk-design work
+  max_net_exposure_pct_nav: TBD    # target near-zero (market-neutral objective) -- exact band UNKNOWN pending calibration
   max_sector_gross_pct_nav: TBD
 
 risk:
@@ -46,7 +64,7 @@ risk:
     max_position_pct_nav: TBD
     max_idea_risk_pct: TBD
   market_beta:
-    target_range: TBD  # reasoned starting point discussed separately; not copied here as if proven
+    target_range: TBD
     hard_stop: TBD
   sector_beta:
     target_range: TBD
@@ -55,17 +73,24 @@ risk:
     soft_pct: TBD
     reduce_risk_pct: TBD
     hard_stop_pct: TBD
-    # UNKNOWN: all drawdown thresholds require calibration against a real
-    # wsc_alpha backtest daily-NAV series once wsc_alpha.metrics exists — see
-    # docs/architecture.md.
+    # All drawdown thresholds require calibration against a real wsc_alpha
+    # backtest daily-NAV series once wsc_alpha.metrics exists -- see
+    # docs/architecture.md. Not derived from the Регламент (it does not specify
+    # any risk parameters).
 
 execution:
-  order_type: TODO  # Arena API order types not yet confirmed — see arena_adapter.py
+  order_type: TODO  # Arena API order types not documented in the Регламент itself -- see arena_adapter.py, UNKNOWN / NEEDS API VERIFICATION against the full REST docs
   min_holding_period_days: TBD
   turnover_budget_weekly_pct_nav: TBD
 
-# Explicitly NOT included below, because they are not confirmed:
-#   - short-selling availability/constraints
-#   - leverage/margin availability
-#   - scoring-formula-specific parameters (none should ever be guessed here —
-#     see the separate risk-design work's score-robustness section for why)
+scoring:
+  # Confirmed, п. 2.20: Nomination 1 ranking is decided at the Organizer's sole
+  # discretion; the methodology is explicitly never disclosed, even on request.
+  # No formula should ever be guessed or hard-coded here -- see
+  # docs/competition_rules.md's "Rating methodology" section and the separate
+  # risk-design work's score-robustness analysis for how this is handled instead.
+  formula: null  # will never be confirmed -- do not attempt to infer or approximate it
+
+# Explicitly NOT included below, because they are not confirmed by the Регламент:
+#   - short-selling availability/constraints (not mentioned anywhere in it)
+#   - leverage/margin availability (not mentioned anywhere in it)

@@ -43,14 +43,15 @@ def test_arena_adapter_raises_not_implemented():
     with pytest.raises(NotImplementedError):
         adapter.get_orders()
     with pytest.raises(NotImplementedError):
-        adapter.submit_order(ticker="AAPL@XNAS", side="BUY", qty=1)
+        adapter.submit_order(ticker="AAPL@XNYS", side="BUY", qty=1)
     with pytest.raises(NotImplementedError):
         adapter.cancel_order("some-id")
     with pytest.raises(NotImplementedError):
-        adapter.get_market_data(["AAPL@XNAS"])
+        adapter.get_market_data(["AAPL@XNYS"])
 
 
 def test_ticker_format_helper():
     from wsc_alpha.execution.arena_adapter import format_ticker
 
-    assert format_ticker("AAPL", "XNAS") == "AAPL@XNAS"
+    # Регламент's own example, п. 2.7.
+    assert format_ticker("AAPL", "XNYS") == "AAPL@XNYS"

@@ -1,80 +1,130 @@
-# Quant Found WSC Alpha
+# Quant Found — WSC Alpha
 
-**Status: Research / Development.**
+Алгоритмическая исследовательская и торговая система для участия в чемпионате
+«Уолл-стрит код: битва алготрейдеров».
 
-Research/development project for **Финам «Уолл-стрит код: битва алготрейдеров»**,
-Nomination 1 («Альфа»).
+**Номинация:** Альфа
+**Рынок:** акции США и разрешённые организатором ETF
+**Статус:** Research / Development
 
-Separate project from Quant Found's private production system — not an export or
-fork. No production code, credentials, trading history, or proprietary strategy
-parameters are included. See `docs/quant_found_mapping.md` for what (if anything)
-is architecturally informed by the private system.
+## Цель проекта
 
-## Design goal (not yet demonstrated)
+Цель WSC Alpha — исследовать и реализовать автоматизированную стратегию,
+ориентированную на получение доходности, максимально независимой от общего
+направления американского фондового рынка. На данном этапе это design goal
+(objective) проекта, а не подтверждённое исследованием свойство системы.
 
-The intended approach, none of it built or validated yet:
+## Подход
 
-- Relative statistical inefficiencies across a filtered universe of liquid US
-  common stocks and broad-market-index-tracking ETFs (see
-  `docs/competition_rules.md`, п. 2.6, for the exact eligibility criteria).
-- **Market-neutral** construction: sizing/hedging aimed at near-zero persistent
-  exposure to the broad market and to individual GICS sectors — a design target,
-  not a property this repository has measured or proven.
-- **Volatility-aware**, equity-scaled position sizing — not fixed notional.
-- Portfolio-level risk management: exposure/beta/concentration limits, staged
-  drawdown response.
-- Automated execution through the competition's **Arena API**, once implemented.
+Проект опирается на подходы Statistical Arbitrage и Relative Value: поиск
+статистических неэффективностей между связанными инструментами, построение
+Market-Neutral портфеля, volatility-aware Position Sizing и portfolio-level
+Risk Management.
 
-Data flow and reuse rationale: `docs/architecture.md`, `docs/quant_found_mapping.md`.
+Конкретные параметры сигналов и реализации alpha engine будут определены
+и опубликованы по мере прохождения исследовательской и валидационной стадии.
 
-## What this repository does not claim
-
-- No alpha signal or strategy logic is disclosed (Регламент п. 2.16 keeps
-  strategies private between participants; this stage is architecture-only
-  regardless).
-- No backtest has been run — no performance numbers anywhere in this repo.
-- No market-neutrality has been demonstrated — it's the design's stated goal
-  (see "Design goal" above), not a measured or validated property.
-- No live or paper trading is connected — `arena_adapter.py` is an interface
-  stub, every method raises `NotImplementedError`, no token referenced.
-- Not the private Quant Found repository — none of its trading engines,
-  execution stack, or historical data/logs are included.
-
-## Repository layout
+## Как устроена система
 
 ```
-src/wsc_alpha/       package (see docs/architecture.md for what each submodule owns)
-config/              example config — risk/universe parameters marked TBD/UNKNOWN
-docs/                competition rules, architecture, Quant Found reuse mapping
-research/            research notebooks/scripts (empty at this stage)
-tests/               smoke tests
+Market Data
+    ↓
+Universe
+    ↓
+Features
+    ↓
+Alpha Discovery
+    ↓
+Portfolio Construction
+    ↓
+Market / Sector Exposure Control
+    ↓
+Risk Management
+    ↓
+Execution
+    ↓
+NAV & Metrics
 ```
 
-## Documentation
+- **Market Data** — рыночные данные по допустимым инструментам конкурса.
+- **Universe** — отбор инструментов по ликвидности, качеству данных и другим фильтрам.
+- **Features** — расчёт признаков для оценки относительной доходности, волатильности и рыночной/секторальной экспозиции.
+- **Alpha Discovery** — поиск кандидатов в alpha ideas с использованием анализа относительной и остаточной (residual) доходности.
+- **Portfolio Construction** — агрегация отобранных идей в целевые позиции портфеля.
+- **Market / Sector Exposure Control** — контроль совокупной экспозиции портфеля к рынку и секторам.
+- **Risk Management** — лимиты на уровне позиции, портфеля и просадки.
+- **Execution** — интерфейс исполнения, рассчитанный на интеграцию с Arena API.
+- **NAV & Metrics** — расчёт NAV, доходности и риск-метрик.
 
-- [`docs/competition_rules.md`](docs/competition_rules.md) — rules sourced from
-  the official Регламент (read in full 2026-08-31), cited by clause number.
-- [`docs/architecture.md`](docs/architecture.md) — intended data flow.
-- [`docs/quant_found_mapping.md`](docs/quant_found_mapping.md) — audit of the
-  private Quant Found system: what's reusable as pattern, and what isn't.
+Подробное описание компонентов — в [`docs/architecture.md`](docs/architecture.md).
 
-## Development
+## Особенности WSC Alpha
 
-```bash
-python -m venv .venv
-source .venv/bin/activate   # .venv\Scripts\activate on Windows
-pip install -e ".[dev]"
-pytest
-```
+Проектные принципы, закладываемые в архитектуру системы:
 
-`config/wsc_alpha.example.yaml` and `.env.example` are placeholders — copy to
-untracked real files before use (see `.gitignore`).
+- контроль market exposure;
+- контроль sector exposure;
+- диверсификация alpha ideas;
+- volatility-aware position sizing;
+- контроль концентрации позиций;
+- контроль turnover;
+- drawdown-aware risk management;
+- автоматизированное исполнение сделок.
 
-## License
+Это принципы проектирования, а не заявленные или уже доказанные результаты.
 
-Not yet decided. Public visibility does not imply an open-source grant — no
-license should be assumed until a LICENSE file is added.
+## Условия среды
 
-## Contact
+Ниже — только подтверждённые официальным Регламентом конкурса факты:
 
-Maxim Ostrovskiy (repository owner).
+- номинация «Альфа»;
+- обыкновенные акции («common stock»), допущенные к организованным торгам на биржах США;
+- ETF, отслеживающие широкий рыночный индекс США (broad-based U.S. market index);
+- исполнение через Arena API;
+- формат инструмента `SYMBOL@MIC`;
+- стартовый виртуальный капитал — 1 000 000 000 рублей;
+- комиссия 0,1% для указанных в Регламенте торговых площадок;
+- цена сделки — с задержкой 15 минут относительно рыночной;
+- торговый период — не более 8 недель.
+
+Полное описание условий, со ссылками на конкретные пункты Регламента — в
+[`docs/competition_rules.md`](docs/competition_rules.md).
+
+## Методология исследования
+
+Перед использованием стратегии проект предусматривает:
+
+- историческое тестирование (backtest);
+- проверку transaction costs;
+- анализ turnover;
+- анализ drawdown;
+- анализ market и sector exposure;
+- walk-forward / out-of-sample validation;
+- stress testing.
+
+На текущем этапе эти проверки не пройдены — формируется соответствующая
+исследовательская инфраструктура.
+
+## Статус
+
+**Current status: Research / Development**
+
+На текущем этапе формируется исследовательская инфраструктура, модель риска и
+backtest pipeline. Финальные параметры стратегии не считаются утверждёнными до
+прохождения валидации.
+
+## О репозитории
+
+Репозиторий содержит конкурсный контур Quant Found WSC Alpha. Production-
+инфраструктура и закрытые компоненты основной системы Quant Found в данный
+репозиторий не входят.
+
+## Документация
+
+- [`docs/competition_rules.md`](docs/competition_rules.md) — условия конкурса со ссылками на пункты Регламента.
+- [`docs/architecture.md`](docs/architecture.md) — архитектура системы.
+- [`docs/quant_found_mapping.md`](docs/quant_found_mapping.md) — какие компоненты Quant Found потенциально переиспользуются.
+
+## Лицензия
+
+Не определена. Публичная доступность репозитория не подразумевает открытую лицензию.

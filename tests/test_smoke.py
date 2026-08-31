@@ -1,14 +1,11 @@
-"""
-Smoke tests only, at this stage.
-
-No backtest results, no strategy behavior, no live/paper execution is tested here —
-none of that exists yet. This file only confirms the package skeleton is importable
-and the sub-packages exist where the architecture doc says they should.
-"""
+"""Smoke tests: package imports, and the Arena adapter stub actually raises
+instead of silently returning fake data."""
 
 from __future__ import annotations
 
 import importlib
+
+import pytest
 
 
 def test_top_level_package_imports():
@@ -18,8 +15,6 @@ def test_top_level_package_imports():
 
 
 def test_all_subpackages_import():
-    """Every subpackage listed in docs/architecture.md's component table must at
-    least be importable, even though none has a real implementation yet."""
     subpackages = [
         "wsc_alpha.data",
         "wsc_alpha.universe",
@@ -36,30 +31,21 @@ def test_all_subpackages_import():
         importlib.import_module(name)
 
 
-def test_arena_adapter_interface_is_unimplemented_not_silently_working():
-    """The Arena adapter must be a clearly-unimplemented stub, not something that
-    could be mistaken for a working integration. Every method must raise."""
+def test_arena_adapter_raises_not_implemented():
     from wsc_alpha.execution.arena_adapter import UnimplementedArenaAdapter
 
     adapter = UnimplementedArenaAdapter()
 
-    import pytest
-
     with pytest.raises(NotImplementedError):
         adapter.get_account()
-
     with pytest.raises(NotImplementedError):
         adapter.get_positions()
-
     with pytest.raises(NotImplementedError):
         adapter.get_orders()
-
     with pytest.raises(NotImplementedError):
         adapter.submit_order(ticker="AAPL@XNAS", side="BUY", qty=1)
-
     with pytest.raises(NotImplementedError):
         adapter.cancel_order("some-id")
-
     with pytest.raises(NotImplementedError):
         adapter.get_market_data(["AAPL@XNAS"])
 
